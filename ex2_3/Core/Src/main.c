@@ -48,10 +48,10 @@ uint8_t rx;
 volatile int period;
 
 // freq = CLOCK / (TIM_PRESCALER+1)(TIM_PERIOD+1)
-// 400 = 80000000 / (2000)(100)
-// 400 = 80000000 / (1999+1)(99+1)
+// 40000 = 80000000 / (2000)
+// 40000 = 80000000 / (1999+1)
 #define TIM3_PRESCALER 1999
-#define TIM3_PERIOD 65000
+#define TIM3_PERIOD 65535
 
 /* USER CODE END PV */
 
