@@ -46,8 +46,12 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 uint8_t rx;
 volatile int period;
-#define TIM3_PRESCALER 0
-#define TIM3_PERIOD 0
+
+// freq = CLOCK / (TIM_PRESCALER+1)(TIM_PERIOD+1)
+// 400 = 80000000 / (2000)(100)
+// 400 = 80000000 / (1999+1)(99+1)
+#define TIM3_PRESCALER 1999
+#define TIM3_PERIOD 99
 
 /* USER CODE END PV */
 
@@ -65,7 +69,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 		case 'z':
 			printf("zmiana stanu\n\r");
 			HAL_GPIO_TogglePin(TIMER1_GPIO_Port, TIMER1_Pin);
-			printf("Wykryto zbocze po %d sekundach\r\n", period/10000);
+			printf("Wykryto zbocze po %d sekundach\r\n", period);
 			break;
 
 		default:
@@ -129,7 +133,7 @@ int main(void)
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
   HAL_UART_Receive_IT(&huart2, &rx, 1);
-  HAL_TIM_IC_Start(&htim3, TIM_CHANNEL_1);
+  HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
