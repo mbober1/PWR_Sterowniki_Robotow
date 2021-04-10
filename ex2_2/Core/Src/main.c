@@ -41,16 +41,17 @@
 
 /* Private variables ---------------------------------------------------------*/
 TIM_HandleTypeDef htim1;
+
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint8_t rx;
 
-// freq = CLOCK / (TIM6_PRESCALER+1)(TIM6_PERIOD+1)
-// 1 = 80000000 / (800)(1000)
-// 1 = 80000000 / (799+1)(999+1)
+// freq = CLOCK / (TIM_PRESCALER+1)(TIM_PERIOD+1)
+// 1000 = 80000000 / (80)(1000)
+// 1000 = 80000000 / (79+1)(999+1)
 
-#define TIM1_PRESCALER 7999 //czestotliwosc 10Hz
+#define TIM1_PRESCALER 79 //czestotliwosc 1kHz
 #define TIM1_PERIOD 999 //rozdzielczosc 0-1000
 
 /* USER CODE END PV */
