@@ -51,7 +51,7 @@ volatile int period;
 // 400 = 80000000 / (2000)(100)
 // 400 = 80000000 / (1999+1)(99+1)
 #define TIM3_PRESCALER 1999
-#define TIM3_PERIOD 99
+#define TIM3_PERIOD 65000
 
 /* USER CODE END PV */
 
@@ -69,7 +69,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 		case 'z':
 			printf("zmiana stanu\n\r");
 			HAL_GPIO_TogglePin(TIMER1_GPIO_Port, TIMER1_Pin);
-			printf("Wykryto zbocze po %d sekundach\r\n", period);
+			if(!HAL_GPIO_ReadPin(TIMER1_GPIO_Port, TIMER1_Pin)) printf("Wykryto zbocze po %d sekundach (%dms)\r\n", period/40000, period);
 			break;
 
 		default:
