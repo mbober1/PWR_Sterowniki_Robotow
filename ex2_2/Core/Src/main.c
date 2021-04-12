@@ -51,8 +51,8 @@ uint8_t rx;
 // 1000 = 80000000 / (80)(1000)
 // 1000 = 80000000 / (79+1)(999+1)
 
-#define TIM1_PRESCALER 79 //czestotliwosc 1kHz
-#define TIM1_PERIOD 999 //rozdzielczosc 0-1000
+//#define TIM1_PRESCALER 79 //czestotliwosc 1kHz
+//#define TIM1_PERIOD 999 //rozdzielczosc 0-1000
 
 /* USER CODE END PV */
 
@@ -65,38 +65,30 @@ static void MX_TIM1_Init(void);
 
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+		  switch (rx) {
+		  		case '0':
+		  			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, 0);
+		  			break;
 
-	switch (rx) {
-		case '0':
-			printf("0%% wypelnienia, dioda wylaczona\n\r");
-			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, 0);
-			break;
+		  		case '1':
+		  			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, 250);
+		  			break;
 
-		case '1':
-			printf("25%% wypelnienia\n\r");
-			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, 250);
-			break;
+		  		case '2':
+		  			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, 500);
+		  			break;
 
-		case '2':
-			printf("50%% wypelnienia\n\r");
-			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, 500);
-			break;
+		  		case '3':
+		  			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, 750);
+		  			break;
 
-		case '3':
-			printf("75%% wypelnienia\n\r");
-			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, 750);
-			break;
+		  		case '4':
+		  			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, 1000);
+		  			break;
 
-		case '4':
-			printf("100%% wypelnienia\n\r");
-			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, 1000);
-			break;
-
-		default:
-			printf("Niepoprawne dane\n\r");
-			break;
-
-		}
+		  		default:
+		  			break;
+	  }
 	HAL_UART_Receive_IT(&huart2, &rx, 1);
 }
 
@@ -105,10 +97,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-int _write(int file, char *ptr, int len) {
-	HAL_UART_Transmit(&huart2, (uint8_t*)ptr, len, 50);
-	return len;
-}
 
 /* USER CODE END 0 */
 

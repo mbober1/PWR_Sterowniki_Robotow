@@ -50,8 +50,8 @@ UART_HandleTypeDef huart2;
 // 1 = 80000000 / (8000)(10000)
 // 1 = 80000000 / (7999+1)(9999+1)
 
-#define TIM6_PRESCALER 7999
-#define TIM6_PERIOD 9999
+//#define TIM6_PRESCALER 7999
+//#define TIM6_PERIOD 9999
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/

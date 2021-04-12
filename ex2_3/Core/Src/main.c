@@ -41,17 +41,20 @@
 
 /* Private variables ---------------------------------------------------------*/
 TIM_HandleTypeDef htim3;
+
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint8_t rx;
 volatile int period;
+volatile int change;
 
 // freq = CLOCK / (TIM_PRESCALER+1)(TIM_PERIOD+1)
-// 40000 = 80000000 / (2000)
-// 40000 = 80000000 / (1999+1)
-#define TIM3_PRESCALER 1999
-#define TIM3_PERIOD 65535
+// 1s / 400us = 2500Hz
+// 2500 = 80000000 / (32000)
+// 2500 = 80000000 / (1999+1)
+//#define TIM3_PRESCALER 31999
+//#define TIM3_PERIOD 65535
 
 /* USER CODE END PV */
 
@@ -64,16 +67,12 @@ static void MX_TIM3_Init(void);
 
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-
 	switch (rx) {
 		case 'z':
-			printf("zmiana stanu\n\r");
 			HAL_GPIO_TogglePin(TIMER1_GPIO_Port, TIMER1_Pin);
-			if(!HAL_GPIO_ReadPin(TIMER1_GPIO_Port, TIMER1_Pin)) printf("Wykryto zbocze po %d sekundach (%dms)\r\n", period/40000, period);
 			break;
 
 		default:
-			printf("Niepoprawne dane\n\r");
 			break;
 
 		}
@@ -85,6 +84,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) {
 			period = __HAL_TIM_GET_COMPARE(&htim3, TIM_CHANNEL_1);
 			__HAL_TIM_SET_COUNTER(&htim3, 0);
+			change = 1;
 		}
 	}
 }
@@ -140,7 +140,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
+	  if(change) {
+		printf("Wykryto zbocze po %d sekundach (%dms)\r\n", period/2500, period);
+		change = 0;
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -236,7 +239,7 @@ static void MX_TIM3_Init(void)
   {
     Error_Handler();
   }
-  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_FALLING;
+  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_BOTHEDGE;
   sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
   sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
   sConfigIC.ICFilter = 0;
