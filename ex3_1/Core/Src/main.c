@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include <stdio.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -45,7 +46,8 @@ ADC_HandleTypeDef hadc1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
+uint16_t adc3, adc4;
+uint8_t adcReady;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -59,7 +61,20 @@ static void MX_ADC1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+int _write(int file, char *ptr, int len) {
+	HAL_UART_Transmit(&huart2, (uint8_t*)ptr, len, 50);
+	return len;
+}
 
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
+	if(hadc == &hadc1) {
+		LL_ADC_REG_SetSequencerRanks(hadc, LL_ADC_REG_RANK_1, LL_ADC_CHANNEL_4);
+		adc3 = HAL_ADC_GetValue(hadc);
+		LL_ADC_REG_SetSequencerRanks(hadc, LL_ADC_REG_RANK_2, LL_ADC_CHANNEL_13);
+		adc4 = HAL_ADC_GetValue(hadc);
+		adcReady = 1;
+	}
+}
 /* USER CODE END 0 */
 
 /**
@@ -93,13 +108,19 @@ int main(void)
   MX_USART2_UART_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_ADC_Start_IT(&hadc1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  if(adcReady) {
+		  adcReady = 0;
+		  printf("ADC3: %d, ADC4: %d\r\n", adc3, adc4);
+		  HAL_ADC_Start_IT(&hadc1);
+	  }
+	  HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
