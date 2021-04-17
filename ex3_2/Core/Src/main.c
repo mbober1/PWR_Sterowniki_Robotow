@@ -115,7 +115,7 @@ int main(void)
 	  dacValue += 38; //+ 0.5V
 	  if(dacValue == 266) dacValue = 255;
 	  else if(dacValue == 293) dacValue = 0;
-	  HAL_Delay(1000);
+	  HAL_Delay(2000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
