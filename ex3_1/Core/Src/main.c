@@ -115,12 +115,18 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  // time = (prescaler * samplingTime+12)/ 80 000 000
+	  // time = (92.5 + 12) / 80000000 = 1.3us
+
 	  if(adcReady) {
 		  adcReady = 0;
 		  printf("ADC3: %d, ADC4: %d\r\n", adc3, adc4);
 		  HAL_ADC_Start_IT(&hadc1);
 	  }
 	  HAL_Delay(1000);
+
+	  // ADC3: 2660, ADC4: 1290
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
