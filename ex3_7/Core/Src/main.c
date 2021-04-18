@@ -41,6 +41,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
+DMA_HandleTypeDef hdma_adc1;
 
 DAC_HandleTypeDef hdac1;
 DMA_HandleTypeDef hdma_dac_ch1;
@@ -59,6 +60,7 @@ UART_HandleTypeDef huart2;
 
 
 uint16_t adc1;
+uint32_t dacValue[] = {0, 38, 76, 114, 152, 190, 228, 255};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -86,13 +88,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 		HAL_ADC_Start_IT(&hadc1);
 	}
 }
-
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
-	if(hadc == &hadc1) {
-		adc1 = HAL_ADC_GetValue(hadc);
-		HAL_ADC_Start(hadc);
-	}
-}
+//
+//void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
+//	if(hadc == &hadc1) {
+//		adc1 = HAL_ADC_GetValue(hadc);
+//		HAL_ADC_Start(hadc);
+//	}
+//}
 
 /* USER CODE END 0 */
 
@@ -131,23 +133,22 @@ int main(void)
   MX_TIM6_Init();
   MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_Base_Start_IT(&htim6);
+  HAL_TIM_Base_Start(&htim6);
   HAL_TIM_Base_Start_IT(&htim7);
+  HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, dacValue, 8, DAC_ALIGN_8B_R);
+  HAL_ADC_Start_DMA(&hadc1, adc1, 1);
 
-  HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
-  int i = 0;
-  uint32_t dacValue[] = {0, 38, 76, 114, 152, 190, 228, 255};
   uint32_t lasttime = 0;
+  uint8_t i = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if((HAL_GetTick()-lasttime)>2000) {
+	  if((HAL_GetTick()-lasttime)>500) {
 		  lasttime = HAL_GetTick();
-		  printf("ADC1: %4d -> %3d%%, DAC: %3ld%%\r\n", adc1, ((adc1)*100)/4095, (dacValue[i++]*100)/255);
-		  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, dacValue[i]);
+		  printf("ADC1: %4d -> %3d%%\r\n", adc1, ((adc1)*100)/4095);
 		  if(i > 7) i = 0;
 	  }
     /* USER CODE END WHILE */
@@ -445,6 +446,9 @@ static void MX_DMA_Init(void)
   __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
+  /* DMA1_Channel1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
   /* DMA1_Channel3_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel3_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel3_IRQn);
