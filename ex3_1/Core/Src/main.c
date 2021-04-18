@@ -120,7 +120,7 @@ int main(void)
 
 	  if(adcReady) {
 		  adcReady = 0;
-		  printf("ADC3: %d, ADC4: %d\r\n", adc3, adc4);
+		  printf("ADC3: %d, ADC4: %d, K = %d\r\n", adc3, adc4, adc3/adc4);
 		  HAL_ADC_Start_IT(&hadc1);
 	  }
 	  HAL_Delay(1000);

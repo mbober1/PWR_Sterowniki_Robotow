@@ -50,8 +50,8 @@ UART_HandleTypeDef huart2;
 uint16_t dacValue;
 //magistrala APB1
 // freq = CLOCK / (TIM_PRESCALER+1)(TIM_PERIOD+1)
-// 2 = 80000000 / (16000)(10000)
-// 2 = 80000000 / (15999+1)(9999+1)
+// 0.5 = 80000000 / (16000)(10000)
+// 0.5 = 80000000 / (15999+1)(9999+1)
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -122,11 +122,6 @@ int main(void)
   while (1)
   {
 	  printf("DAC %3d -> %3d%%\r\n", dacValue, ((dacValue)*100)/255);
-	  // 3.3 -> 255
-	  // 0.5 -> 38
-	  // 0.0, 	0.5,	1.0,	1.5, 	2.0, 	2.5, 	3.0, 	3.3
-	  // 0, 	620, 	1240,	1860, 	2480, 	3100, 	3720, 	4095
-	  // 0, 	38, 	76, 	114, 	152, 	190, 	228, 	266
 	  HAL_Delay(2000);
     /* USER CODE END WHILE */
 

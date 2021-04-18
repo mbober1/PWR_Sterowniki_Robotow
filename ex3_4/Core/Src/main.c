@@ -73,10 +73,6 @@ static void MX_TIM6_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-int _write(int file, char *ptr, int len) {
-	HAL_UART_Transmit(&huart2, (uint8_t*)ptr, len, 50);
-	return len;
-}
 
 /* USER CODE END 0 */
 
@@ -115,7 +111,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_8B_R, 0);
   HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_2, dacValue, 8, DAC_ALIGN_8B_R);
-  HAL_TIM_Base_Start_IT(&htim6);
+  HAL_TIM_Base_Start(&htim6);
   /* USER CODE END 2 */
 
   /* Infinite loop */
