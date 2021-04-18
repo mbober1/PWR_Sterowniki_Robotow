@@ -89,7 +89,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
 	if(hadc == &hadc1) {
 		adc1 = HAL_ADC_GetValue(hadc);
-		HAL_ADC_Start(&hadc);
+		HAL_ADC_Start(hadc);
 	}
 }
 
@@ -142,8 +142,8 @@ int main(void)
   {
 	  if((HAL_GetTick()-lasttime)>2000) {
 		  lasttime = HAL_GetTick();
-		  printf("ADC1: %4d -> %3d%%, DAC: %3ld%%\r\n", adc1, ((adc1)*100)/4095, (dacValue[i]*100)/255);
-		  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, dacValue[i++]);
+		  printf("ADC1: %4d -> %3d%%, DAC: %3ld%%\r\n", adc1, ((adc1)*100)/4095, (dacValue[i++]*100)/255);
+		  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, dacValue[i]);
 		  if(i > 7) i = 0;
 	  }
     /* USER CODE END WHILE */
