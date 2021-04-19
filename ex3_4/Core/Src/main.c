@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,16 +48,7 @@ TIM_HandleTypeDef htim6;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-//magistrala APB1
-// freq = CLOCK / (TIM_PRESCALER+1)(TIM_PERIOD+1)
-// 2 = 80000000 / (16000)(10000)
-// 2 = 80000000 / (15999+1)(9999+1)
-
-// 3.3 -> 255
-// 0.5 -> 38
-// 0.0, 	0.5,	1.0,	1.5, 	2.0, 	2.5, 	3.0, 	3.3 V
-
-uint32_t dacValue[] = {0, 38, 76, 114, 152, 190, 228, 255};
+volatile uint8_t timINT;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -73,6 +64,16 @@ static void MX_TIM6_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+int _write(int file, char *ptr, int len) {
+	HAL_UART_Transmit(&huart2, (uint8_t*)ptr, len, 50);
+	return len;
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+	if(htim == &htim6) {
+		timINT = 1;
+	}
+}
 
 /* USER CODE END 0 */
 
@@ -83,7 +84,15 @@ static void MX_TIM6_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+	//magistrala APB1
+	// freq = CLOCK / (TIM_PRESCALER+1)(TIM_PERIOD+1)
+	// 0.5 = 80000000 / (16000)(10000)
+	// 0.5 = 80000000 / (15999+1)(9999+1)
 
+	// 3.3 -> 255
+	// 0.5 -> 39
+	// 0.0, 	0.5,	1.0,	1.5, 	2.0, 	2.5, 	3.0, 	3.3 V
+	uint8_t dacValue[] = {0, 39, 77, 116, 154, 193, 231, 255};
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -109,15 +118,20 @@ int main(void)
   MX_DAC1_Init();
   MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
-  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_8B_R, 0);
-  HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_2, dacValue, 8, DAC_ALIGN_8B_R);
-  HAL_TIM_Base_Start(&htim6);
+//  HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
+//  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_8B_R, 255);
+  HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_2, (uint32_t*)dacValue, 8, DAC_ALIGN_8B_R);
+  HAL_TIM_Base_Start_IT(&htim6);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  if(timINT) {
+		  timINT = 0;
+		  printf("DAC %ld\r\n", HAL_DAC_GetValue(&hdac1, DAC_CHANNEL_2));
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -246,7 +260,7 @@ static void MX_TIM6_Init(void)
   {
     Error_Handler();
   }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim6, &sMasterConfig) != HAL_OK)
   {

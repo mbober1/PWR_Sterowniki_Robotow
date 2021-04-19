@@ -47,7 +47,7 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 volatile uint16_t adc3, adc4;
-uint8_t adcReady;
+volatile uint8_t adcReady;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
