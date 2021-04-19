@@ -46,7 +46,7 @@ ADC_HandleTypeDef hadc1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-uint16_t adc3, adc4;
+volatile uint16_t adc3, adc4;
 uint8_t adcReady;
 /* USER CODE END PV */
 
@@ -68,7 +68,7 @@ int _write(int file, char *ptr, int len) {
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
 	if(hadc == &hadc1) {
-//		LL_ADC_REG_SetSequencerRanks(&hadc, LL_ADC_REG_RANK_1, LL_ADC_CHANNEL_4);
+//		LL_ADC_REG_SetSequencerRanks(hadc, LL_ADC_REG_RANK_1, LL_ADC_CHANNEL_4);
 		adc3 = HAL_ADC_GetValue(hadc);
 //		LL_ADC_REG_SetSequencerRanks(hadc, LL_ADC_REG_RANK_2, LL_ADC_CHANNEL_13);
 		adc4 = HAL_ADC_GetValue(hadc);
@@ -124,6 +124,7 @@ int main(void)
 		  HAL_ADC_Start_IT(&hadc1);
 		  // 2660 = 4095 * (R1/(R1+R2+R3)
 		  // 1290 = 2660 * (R2/(R2+R3)
+		  // R2/R3 = adc4/(adc3-adc4)
 	  }
 	  HAL_Delay(1000);
 
