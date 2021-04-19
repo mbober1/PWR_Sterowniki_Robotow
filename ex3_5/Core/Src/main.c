@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -114,7 +114,7 @@ int main(void)
   HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
   int i = 0;
   uint16_t adc1;
-  uint32_t dacValue[] = {0, 38, 76, 114, 152, 190, 228, 255};
+  uint32_t dacValue[] = {0, 38, 114, 190, 228, 255};
   uint32_t lasttime = 0;
   /* USER CODE END 2 */
 
@@ -122,11 +122,11 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if((HAL_GetTick()-lasttime)>500) {
+	  if((HAL_GetTick()-lasttime)>499) {
 		  lasttime = HAL_GetTick();
 		  printf(" DAC: %3ld%%\r\n", (dacValue[i]*100)/255);
 		  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, dacValue[i++]);
-		  if(i > 7) i = 0;
+		  if(i > 5) i = 0;
 
 		  if(!(i%2) && HAL_ADC_PollForConversion(&hadc1, 10) == HAL_OK) {
 			  adc1 = HAL_ADC_GetValue(&hadc1);

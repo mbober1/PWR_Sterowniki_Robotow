@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,8 +59,9 @@ UART_HandleTypeDef huart2;
 // 0.0, 	0.5,	1.0,	1.5, 	2.0, 	2.5, 	3.0, 	3.3 V
 
 
-uint16_t adc1;
-uint32_t dacValue[] = {0, 38, 76, 114, 152, 190, 228, 255};
+volatile uint16_t adc1;
+volatile uint8_t adcReady;
+uint8_t dacValue[] = {0, 38, 114, 190, 228, 255};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -86,6 +87,9 @@ int _write(int file, char *ptr, int len) {
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	if(htim == &htim6) {
 		HAL_ADC_Start_IT(&hadc1);
+	}
+	else if(htim == &htim7) {
+		adcReady = 1;
 	}
 }
 //
@@ -133,23 +137,20 @@ int main(void)
   MX_TIM6_Init();
   MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_Base_Start(&htim6);
+  HAL_TIM_Base_Start_IT(&htim6);
   HAL_TIM_Base_Start_IT(&htim7);
-  HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, dacValue, 8, DAC_ALIGN_8B_R);
-  HAL_ADC_Start_DMA(&hadc1, adc1, 1);
+  HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, (uint32_t*)dacValue, 6, DAC_ALIGN_8B_R);
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t*) &adc1, 1);
 
-  uint32_t lasttime = 0;
-  uint8_t i = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if((HAL_GetTick()-lasttime)>500) {
-		  lasttime = HAL_GetTick();
+	  if(adcReady) {
+		  adcReady = 0;
 		  printf("ADC1: %4d -> %3d%%\r\n", adc1, ((adc1)*100)/4095);
-		  if(i > 7) i = 0;
 	  }
     /* USER CODE END WHILE */
 
