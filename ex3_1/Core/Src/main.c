@@ -68,9 +68,9 @@ int _write(int file, char *ptr, int len) {
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
 	if(hadc == &hadc1) {
-		LL_ADC_REG_SetSequencerRanks(hadc, LL_ADC_REG_RANK_1, LL_ADC_CHANNEL_4);
+//		LL_ADC_REG_SetSequencerRanks(&hadc, LL_ADC_REG_RANK_1, LL_ADC_CHANNEL_4);
 		adc3 = HAL_ADC_GetValue(hadc);
-		LL_ADC_REG_SetSequencerRanks(hadc, LL_ADC_REG_RANK_2, LL_ADC_CHANNEL_13);
+//		LL_ADC_REG_SetSequencerRanks(hadc, LL_ADC_REG_RANK_2, LL_ADC_CHANNEL_13);
 		adc4 = HAL_ADC_GetValue(hadc);
 		adcReady = 1;
 	}
@@ -120,8 +120,10 @@ int main(void)
 
 	  if(adcReady) {
 		  adcReady = 0;
-		  printf("ADC3: %d, ADC4: %d, K = %d\r\n", adc3, adc4, adc3/adc4);
+		  printf("ADC3: %d, ADC4: %d, K = %f\r\n", adc3, adc4, (float)adc4/(adc3-adc4));
 		  HAL_ADC_Start_IT(&hadc1);
+		  // 2660 = 4095 * (R1/(R1+R2+R3)
+		  // 1290 = 2660 * (R2/(R2+R3)
 	  }
 	  HAL_Delay(1000);
 

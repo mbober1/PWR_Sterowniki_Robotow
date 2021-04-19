@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -108,13 +108,13 @@ int main(void)
 	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_8B_R, dacValue);
 	  printf("DAC %3d -> %3d%%\r\n", dacValue, ((dacValue)*100)/255);
 	  // 3.3 -> 255
-	  // 0.5 -> 38
+	  // 0.5 -> 39
 	  // 0.0, 	0.5,	1.0,	1.5, 	2.0, 	2.5, 	3.0, 	3.3
 	  // 0, 	620, 	1240,	1860, 	2480, 	3100, 	3720, 	4095
-	  // 0, 	38, 	76, 	114, 	152, 	190, 	228, 	266
-	  dacValue += 38; //+ 0.5V
-	  if(dacValue == 266) dacValue = 255;
-	  else if(dacValue == 293) dacValue = 0;
+	  // 0, 	38, 	78, 	117, 	156, 	195, 	234, 	255
+	  dacValue += 39; //+ 0.5V
+	  if(dacValue == 273) dacValue = 255;
+	  else if(dacValue == 294) dacValue = 0;
 	  HAL_Delay(2000);
     /* USER CODE END WHILE */
 
