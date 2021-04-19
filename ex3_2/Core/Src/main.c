@@ -45,7 +45,7 @@ DAC_HandleTypeDef hdac1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-uint16_t dacValue;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -74,6 +74,7 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 
+	uint16_t dacValue;
 
   /* USER CODE END 1 */
 
@@ -110,8 +111,7 @@ int main(void)
 	  // 3.3 -> 255
 	  // 0.5 -> 39
 	  // 0.0, 	0.5,	1.0,	1.5, 	2.0, 	2.5, 	3.0, 	3.3
-	  // 0, 	620, 	1240,	1860, 	2480, 	3100, 	3720, 	4095
-	  // 0, 	38, 	78, 	117, 	156, 	195, 	234, 	255
+	  // 0, 	39, 	78, 	117, 	156, 	195, 	234, 	255
 	  dacValue += 39; //+ 0.5V
 	  if(dacValue == 273) dacValue = 255;
 	  else if(dacValue == 294) dacValue = 0;
