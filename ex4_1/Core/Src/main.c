@@ -97,17 +97,20 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	switch (rx) {
-		case '1':
-			printf("Witaj");
+		case '0':
 			dac_value = 0;
 			break;
 
-		case '2':
+		case '1':
 			dac_value = 1024;
 			break;
 
-		case '3':
+		case '2':
 			dac_value = 2048;
+			break;
+
+		case '3':
+			dac_value = 3072;
 			break;
 
 		case '4':
@@ -160,7 +163,7 @@ int main(void)
   HAL_UART_Receive_IT(&huart2, &rx, 1);
 
 
-  pid_init(&pid, 1.0f, 0.0f, 0.0f, 10, 1);
+  pid_init(&pid, 10.0f, 2.0f, 0.0f, 10, 1);
   pid.p_max = pid_scale(&pid, 4095);
   pid.p_min = pid_scale(&pid, -4095);
   pid.i_max = pid_scale(&pid, 4095);
