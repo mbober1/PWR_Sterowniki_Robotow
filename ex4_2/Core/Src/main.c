@@ -185,7 +185,7 @@ int main(void)
   while (1)
   {
 	  if((HAL_GetTick()-lasttime)>200) {
-		  printf("DAC: MV: %4d, %3d%%, CS: %4d, SP: %4d, %3d%%\r\n", adc_value, ((adc_value)*100)/adc_max, pwm_control, dac_value, dac_value);
+		  printf("PWM: MV: %4d, %3d%%, CS: %4d, SP: %4d, %3d%%\r\n", adc_value, ((adc_value)*100)/adc_max, pwm_control, dac_value, dac_value);
 	  }
 
 	  if (adc_flag == 1) {
