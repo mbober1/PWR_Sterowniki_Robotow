@@ -166,7 +166,7 @@ int main(void)
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
 
 
-  pid_init(&pid, 300.0f, 40.0f, 15.0f, 10, 10);
+  pid_init(&pid, 600.0f, 50.0f, 10.0f, 10, 10);
   pid.p_max = pid_scale(&pid, 4000);
   pid.p_min = pid_scale(&pid, -4000);
   pid.i_max = pid_scale(&pid, 4000);
