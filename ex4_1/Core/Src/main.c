@@ -98,7 +98,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	switch (rx) {
 		case '0':
-			dac_value = 0;
+			dac_value = 1;
 			break;
 
 		case '1':
@@ -163,7 +163,7 @@ int main(void)
   HAL_UART_Receive_IT(&huart2, &rx, 1);
 
 
-  pid_init(&pid, 10.0f, 2.0f, 0.0f, 10, 1);
+  pid_init(&pid, 5.0f, 0.0f, 0.0f, 10, 1);
   pid.p_max = pid_scale(&pid, 4095);
   pid.p_min = pid_scale(&pid, -4095);
   pid.i_max = pid_scale(&pid, 4095);
@@ -182,7 +182,7 @@ int main(void)
   while (1)
   {
 	  if((HAL_GetTick()-lasttime)>200) {
-		  printf("DAC: MV: %4d, %3d%%, CS: %4d, SP: %4d, %3d%%\r\n", adc_value, ((adc_value)*100)/4095, dac_control, dac_value, (dac_value*100)/4095);
+		  printf("DAC: MV: %4d, %3d%%, CS: %4d, SP: %4d, %3d%%\r\n", adc_value, ((adc_value)*100)/3546, dac_control, dac_value, (dac_value*100)/4095);
 	  }
 
 	  if (adc_flag == 1) {
