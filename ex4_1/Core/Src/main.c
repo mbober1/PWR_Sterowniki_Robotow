@@ -42,7 +42,6 @@
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
-
 DAC_HandleTypeDef hdac1;
 
 TIM_HandleTypeDef htim6;
@@ -64,7 +63,7 @@ volatile uint8_t dac_nperiod;
 #define dac_nperiod_max 100 //programowy prescaler
 int step_desired;
 cpid_t pid;
-volatile uint8_t rx;
+uint8_t rx;
 
 
 /* USER CODE END PV */
@@ -90,20 +89,20 @@ int _write(int file, char *ptr, int len) {
 
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
-if (hadc == &hadc1) {
-adc_flag = 1;
-adc_value = HAL_ADC_GetValue(&hadc1);
-}
+  if (hadc == &hadc1) {
+    adc_flag = 1;
+    adc_value = HAL_ADC_GetValue(&hadc1);
+  }
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	switch (rx) {
-		case '0':
+		case '1':
 			printf("Witaj");
 			dac_value = 0;
 			break;
 
-		case '1':
+		case '2':
 			dac_value = 1024;
 			break;
 
@@ -113,10 +112,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 		case '4':
 			dac_value = 4095;
-			break;
-
-		default:
-			printf("Niepoprawne dane\n\r");
 			break;
 		}
 	HAL_UART_Receive_IT(&huart2, &rx, 1);
@@ -184,13 +179,13 @@ int main(void)
   while (1)
   {
 	  if((HAL_GetTick()-lasttime)>200) {
-		  printf("DAC: MV: %4d, %3d%%, CS: %4d, SP: %4d, %3d%%\r\n", adc_value, ((adc_value)*100)/4095, dac_control, (dac_control*100)/4095, (dac_value*100)/4095);
+		  printf("DAC: MV: %4d, %3d%%, CS: %4d, SP: %4d, %3d%%\r\n", adc_value, ((adc_value)*100)/4095, dac_control, dac_value, (dac_value*100)/4095);
 	  }
 
 	  if (adc_flag == 1) {
-	  adc_flag = 0;
-	  dac_control = pid_calc(&pid, adc_value, dac_value);
-	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, dac_control);
+		  adc_flag = 0;
+		  dac_control = pid_calc(&pid, adc_value, dac_value);
+		  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, dac_control);
 	  }
 
     /* USER CODE END WHILE */
