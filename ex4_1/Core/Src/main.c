@@ -58,14 +58,9 @@ volatile int adc_flag;
 volatile int adc_value;
 volatile int dac_value;
 volatile int dac_control;
-volatile uint16_t dac_index;
-volatile uint8_t dac_nperiod;
-#define dac_nperiod_max 100 //programowy prescaler
-int step_desired;
 cpid_t pid;
 uint8_t rx;
-volatile uint16_t adc_max = 2050;
-volatile uint16_t adc_min = 1400; //  <-- na kazdej plytce jest to inne
+volatile uint16_t adc_max = 4095;
 
 
 /* USER CODE END PV */
@@ -92,7 +87,7 @@ int _write(int file, char *ptr, int len) {
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
   if (hadc == &hadc1) {
     adc_flag = 1;
-    adc_value = HAL_ADC_GetValue(hadc) - adc_min;
+    adc_value = HAL_ADC_GetValue(hadc);
   }
 }
 
@@ -111,7 +106,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 		break;
 
 	case '3':
-		dac_value = 3*(adc_max/4);
+		dac_value = (3*adc_max)/4;
 		break;
 
 	case '4':

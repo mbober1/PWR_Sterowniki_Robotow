@@ -60,8 +60,6 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define TIM_PID_LOOP_PRESCALER 7999
 #define TIM_PID_LOOP_PERIOD 99
-#define TIM_DAC_PRESCALER 7999
-#define TIM_DAC_PERIOD 99
 #define B1_Pin GPIO_PIN_13
 #define B1_GPIO_Port GPIOC
 #define USART_TX_Pin GPIO_PIN_2
