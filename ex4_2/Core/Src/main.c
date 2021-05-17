@@ -54,7 +54,7 @@ UART_HandleTypeDef huart2;
 // 100 = 80000000 / (7999+1)(99+1)
 
 
-// freq = CLOCK / (TIM_PRESCALER+1)(TIM_PERIOD+1)
+// freq = CLOCK / (TIM_3PRESCALER+1)(TIM3_PERIOD+1)
 // 1000 = 80000000 / (20)(4000)
 // 1000 = 80000000 / (19+1)(3999+1)
 
@@ -96,7 +96,7 @@ int _write(int file, char *ptr, int len) {
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
   if (hadc == &hadc2) {
     adc_flag = 1;
-    adc_value = HAL_ADC_GetValue(&hadc2) - adc_min;
+    adc_value = HAL_ADC_GetValue(&hadc) - adc_min;
   }
 }
 
