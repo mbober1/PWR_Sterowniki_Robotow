@@ -65,8 +65,7 @@ volatile uint8_t dac_nperiod;
 int step_desired;
 cpid_t pid;
 uint8_t rx;
-uint16_t adc_min = 2004;
-uint16_t adc_max = 1999;
+volatile uint16_t adc_max = 2050;
 
 
 /* USER CODE END PV */
@@ -94,32 +93,32 @@ int _write(int file, char *ptr, int len) {
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
   if (hadc == &hadc1) {
     adc_flag = 1;
-    adc_value = HAL_ADC_GetValue(&hadc1) - adc_min;
+    adc_value = HAL_ADC_GetValue(hadc);
   }
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	switch (rx) {
-		case '0':
-			dac_value = 0;
-			break;
+	case '0':
+		dac_value = 0;
+		break;
 
-		case '1':
-			dac_value = 25;
-			break;
+	case '1':
+		dac_value = adc_max/4;
+		break;
 
-		case '2':
-			dac_value = 50;
-			break;
+	case '2':
+		dac_value = adc_max/2;
+		break;
 
-		case '3':
-			dac_value = 75;
-			break;
+	case '3':
+		dac_value = 3*(adc_max/4);
+		break;
 
-		case '4':
-			dac_value = 100;
-			break;
-		}
+	case '4':
+		dac_value = adc_max;
+		break;
+	}
 	HAL_UART_Receive_IT(&huart2, &rx, 1);
 }
 /* USER CODE END 0 */
@@ -185,12 +184,12 @@ int main(void)
   while (1)
   {
 	  if((HAL_GetTick()-lasttime)>200) {
-		  printf("DAC: MV: %4d, %3d%%, CS: %4d, SP: %3d%%\r\n", adc_value, ((adc_value)*100)/adc_max, dac_control, dac_value);
+		  printf("DAC: MV: %4d, %3d%%, CS: %4d, SP: %4d, %3d%%\r\n", adc_value, ((adc_value)*100)/adc_max, dac_control, dac_value, (dac_value*100)/adc_max);
 	  }
 
 	  if (adc_flag == 1) {
 		  adc_flag = 0;
-		  dac_control = pid_calc(&pid, ((adc_value)*100)/adc_max, dac_value);
+		  dac_control = pid_calc(&pid, adc_value, dac_value);
 		  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, dac_control);
 	  }
 
