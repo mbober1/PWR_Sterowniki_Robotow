@@ -66,6 +66,7 @@ int step_desired;
 cpid_t pid;
 uint8_t rx;
 volatile uint16_t adc_max = 2050;
+volatile uint16_t adc_min = 1400; //  <-- na kazdej plytce jest to inne
 
 
 /* USER CODE END PV */
@@ -93,7 +94,7 @@ int _write(int file, char *ptr, int len) {
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
   if (hadc == &hadc1) {
     adc_flag = 1;
-    adc_value = HAL_ADC_GetValue(hadc);
+    adc_value = HAL_ADC_GetValue(hadc) - adc_min;
   }
 }
 
