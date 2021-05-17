@@ -54,7 +54,7 @@ UART_HandleTypeDef huart2;
 // 100 = 80000000 / (7999+1)(99+1)
 
 
-// freq = CLOCK / (TIM6_PRESCALER+1)(TIM6_PERIOD+1)
+// freq = CLOCK / (TIM_PRESCALER+1)(TIM_PERIOD+1)
 // 1000 = 80000000 / (20)(4000)
 // 1000 = 80000000 / (19+1)(3999+1)
 
@@ -68,8 +68,8 @@ volatile uint8_t dac_nperiod;
 int step_desired;
 cpid_t pid;
 uint8_t rx;
-uint16_t adc_min = 0;
-uint16_t adc_max = 4020;
+volatile uint16_t adc_min = 0;
+volatile uint16_t adc_max = 4020;
 
 
 /* USER CODE END PV */
@@ -107,19 +107,19 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 			break;
 
 		case '1':
-			dac_value = 25;
+			dac_value = adc_max/4;
 			break;
 
 		case '2':
-			dac_value = 50;
+			dac_value = adc_max/2;
 			break;
 
 		case '3':
-			dac_value = 75;
+			dac_value = 3*(adc_max/4);
 			break;
 
 		case '4':
-			dac_value = 100;
+			dac_value = adc_max;
 			break;
 		}
 	HAL_UART_Receive_IT(&huart2, &rx, 1);
@@ -185,12 +185,12 @@ int main(void)
   while (1)
   {
 	  if((HAL_GetTick()-lasttime)>200) {
-		  printf("PWM: MV: %4d, %3d%%, CS: %4d, SP: %4d, %3d%%\r\n", adc_value, ((adc_value)*100)/adc_max, pwm_control, dac_value, dac_value);
+		  printf("PWM: MV: %4d, %3d%%, CS: %4d, SP: %4d, %3d%%\r\n", adc_value, ((adc_value)*100)/adc_max, pwm_control, dac_value, (dac_value*100)/adc_max);
 	  }
 
 	  if (adc_flag == 1) {
 		  adc_flag = 0;
-		  pwm_control = pid_calc(&pid, ((adc_value)*100)/adc_max, dac_value);
+		  pwm_control = pid_calc(&pid, adc_value, dac_value);
 		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, pwm_control);
 	  }
 
