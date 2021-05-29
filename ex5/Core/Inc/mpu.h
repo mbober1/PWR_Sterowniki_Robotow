@@ -39,6 +39,7 @@ uint8_t mpuWHO() { // komenda WHO AM I
 	  return data;
 }
 
+
 void mpuAccel(struct Data* result) {
 	uint8_t data[6];
 
