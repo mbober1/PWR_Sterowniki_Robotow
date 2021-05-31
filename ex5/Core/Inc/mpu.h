@@ -20,12 +20,12 @@ void mpuInit() {
     // Sample Rate = Gyroscope Output Rate / (1 + SMPLRT_DIV) = 8000 / (1 + 7)
     HAL_I2C_Mem_Write(&hi2c1, MPU_ADDR, 0x19, 1, &data, 1, 100);
 
-    // wylaczamy self-testy
+    // wylaczamy self-testy akcelerometru
     // ustawiamy zakres na 2G
     data = 0;
     HAL_I2C_Mem_Write(&hi2c1, MPU_ADDR, 0x1C, 1, &data, 1, 100);
 
-    // wylaczamy self-testy
+    // wylaczamy self-testy zyroskopu
     // ustawiamy zakres na +- 250 stopni na sekunde
     data = 0;
     HAL_I2C_Mem_Write(&hi2c1, MPU_ADDR, 0x1B, 1, &data, 1, 100);
@@ -45,11 +45,35 @@ void mpuAccel(struct Data* result) {
 
 	HAL_I2C_Mem_Read(&hi2c1, MPU_ADDR, 0x3B, 1, data, 6, 100);
 
-	// 2^15 (16 bit bez znaku) = 32768 --> zakres 0-32768
-	// czyl -16384 do 16384
+	// 2^16 = 32768 --> zakres 0-32768
+	// 32768/2G = 16384
 
 	for (int i = 0; i < 3; i++) {
-		result->axis[i] = data[i<<1] << 8 | data[(i<<1)+1];
+		result->axis[i] = (int16_t)(data[i<<1] << 8 | data[(i<<1)+1]);
 		result->axis[i] /= 16384;
+		result->axis[i] *= 9.80665;
 	}
+}
+
+
+void mpuGyro(struct Data* result) {
+	uint8_t data[6];
+
+	HAL_I2C_Mem_Read(&hi2c1, MPU_ADDR, 0x43, 1, data, 6, 100);
+
+	// 2^16 = 32768 --> zakres 0-32768
+	// 32768/250 (stopni na sek) = 131.1
+
+	for (int i = 0; i < 3; i++) {
+		result->axis[i] = (int16_t)(data[i<<1] << 8 | data[(i<<1)+1]);
+		result->axis[i] /= 131.1;
+	}
+}
+
+float mpuTemp() {
+	uint8_t data[2];
+
+	HAL_I2C_Mem_Read(&hi2c1, MPU_ADDR, 0x41, 1, data, 2, 100);
+	float result = (int16_t)(data[0] << 8 | data[1]);
+	return result / 340 + 36.53;
 }

@@ -24,7 +24,6 @@
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include "mpu.h"
-#include "adx.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -104,22 +103,24 @@ int main(void)
   MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
 
-//  struct Data accel;
+  struct Data accel;
+  struct Data gyro;
   printf("Who I am: 0x%x <-- 0x68 to poprawna warotsc\r\n", mpuWHO());
   mpuInit();
-  adxInit();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-//	  mpuAccel(&accel);
-//	  printf("X: %.3f, Y: %.3f, Z:%.3f \r\n", accel.axis[0], accel.axis[1], accel.axis[2]);
-	  printf("ADX ID: 0x%x <-- 0xE5 to poprawna warotsc \r\n", adxID());
-
+	  printf("\033[2J"); // czyszczenie konsoli
+	  mpuAccel(&accel);
+	  mpuGyro(&gyro);
+	  printf("Akcelerometr:		X: %.3f m/s^2, Y: %.3f m/s^2, Z:%.3f m/s^2 \r\n", accel.axis[0], accel.axis[1], accel.axis[2]);
+	  printf("Zyroskop:		X: %-.3f deg/s, Y: %-.3f deg/s, Z:%-.3f deg/s \r\n", gyro.axis[0], gyro.axis[1], gyro.axis[2]);
+	  printf("Termometr:	%f \r\n", mpuTemp());
 	  HAL_Delay(200);
-
 
     /* USER CODE END WHILE */
 
