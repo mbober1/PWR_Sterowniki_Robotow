@@ -7,7 +7,7 @@ struct Data {
 	float axis[3];
 };
 
-void mpuInit() {
+void mpuInit() { // konfiguracja czujnika
 	uint8_t data = 0;
 	// ustawiamy taktowanie na wew oscylator 8MHz
 	// wybudzamy MPU
@@ -40,7 +40,7 @@ uint8_t mpuWHO() { // komenda WHO AM I
 }
 
 
-void mpuAccel(struct Data* result) {
+void mpuAccel(struct Data* result) { // pomiar przyspieszenia
 	uint8_t data[6];
 
 	HAL_I2C_Mem_Read(&hi2c1, MPU_ADDR, 0x3B, 1, data, 6, 100);
@@ -56,7 +56,7 @@ void mpuAccel(struct Data* result) {
 }
 
 
-void mpuGyro(struct Data* result) {
+void mpuGyro(struct Data* result) { // pomiar obrotu
 	uint8_t data[6];
 
 	HAL_I2C_Mem_Read(&hi2c1, MPU_ADDR, 0x43, 1, data, 6, 100);
@@ -70,7 +70,7 @@ void mpuGyro(struct Data* result) {
 	}
 }
 
-float mpuTemp() {
+float mpuTemp() { // pomiar temperatury
 	uint8_t data[2];
 
 	HAL_I2C_Mem_Read(&hi2c1, MPU_ADDR, 0x41, 1, data, 2, 100);
