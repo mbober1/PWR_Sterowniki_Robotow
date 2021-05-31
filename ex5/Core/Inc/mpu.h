@@ -45,8 +45,7 @@ void mpuAccel(struct Data* result) { // pomiar przyspieszenia
 
 	HAL_I2C_Mem_Read(&hi2c1, MPU_ADDR, 0x3B, 1, data, 6, 100);
 
-	// 2^16 = 32768 --> zakres 0-32768
-	// 32768/2G = 16384
+	// czulosc 16384 LSB/g
 
 	for (int i = 0; i < 3; i++) {
 		result->axis[i] = (int16_t)(data[i<<1] << 8 | data[(i<<1)+1]);
@@ -61,14 +60,14 @@ void mpuGyro(struct Data* result) { // pomiar obrotu
 
 	HAL_I2C_Mem_Read(&hi2c1, MPU_ADDR, 0x43, 1, data, 6, 100);
 
-	// 2^16 = 32768 --> zakres 0-32768
-	// 32768/250 (stopni na sek) = 131.1
+	// czulosc 131 LSB/°/s
 
 	for (int i = 0; i < 3; i++) {
 		result->axis[i] = (int16_t)(data[i<<1] << 8 | data[(i<<1)+1]);
-		result->axis[i] /= 131.1;
+		result->axis[i] /= 131.0;
 	}
 }
+
 
 float mpuTemp() { // pomiar temperatury
 	uint8_t data[2];
